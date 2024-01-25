@@ -1,0 +1,64 @@
+1-Return all customers listed in the orders table who placed orders on the most recently recorded day.
+
+SELECT * from customers where customer_id in (SELECT customer_id from orders where order_date = (select order_date from orders order by order_date desc limit 1) )
+---------------------------------------------------------------------------------------------------------------------------------------
+2-Select all product names and prices that have unit price which is bigger than price of product with name 'Carnarvon Tigers'
+
+SELECT product_name,unit_price from products where unit_price > (Select unit_price from products where product_name = 'Carnarvon Tigers')
+---------------------------------------------------------------------------------------------------------------------------------------
+3-Select customer ids and ther contact names that made order that was shipped to Brazil
+
+SELECT customer_id , contact_name from customers where customer_id in(select customer_id from orders where ship_country = 'Brazil' )
+---------------------------------------------------------------------------------------------------------------------------------------
+4-Select customer ids who ordered more than 20 items of product with name = 'Tofu' on a single order.
+
+SELECT customer_id  from orders where order_id in
+(select order_id from order_details where 
+ product_id = (select product_id from products where product_name = 'Tofu') )
+ 
+ and
+ 
+ order_id in (
+    SELECT order_id
+    from order_details
+    where quantity > 20
+);
+---------------------------------------------------------------------------------------------------------------------------------------
+5-Select only discounted products names, dicount value, category of it, and shipped date of order where this product occurs. Use join + sub query structure.
+
+ELECT
+    p.product_name,
+    od.discount,
+    c.category_name,
+    o.shipped_date
+FROM
+    products p
+JOIN
+    order_details od ON p.product_id = od.product_id
+JOIN
+    orders o ON od.order_id = o.order_id
+JOIN
+    categories c ON p.category_id = c.category_id
+WHERE
+    od.discount > 0;
+
+---------------------------------------------------------------------------------------------------------------------------------------
+6-Select orders for customers that come from London and are shipped via United Package. Remember to use sub queries (not joins).
+
+
+SELECT *
+FROM orders
+WHERE customer_id IN (
+    SELECT customer_id
+    FROM customers
+    WHERE city = 'London'
+)
+AND 
+
+    ship_via = (
+    SELECT shipper_id
+    FROM shippers
+    WHERE company_name = 'United Package'
+);
+
+---------------------------------------------------------------------------------------------------------------------------------------
